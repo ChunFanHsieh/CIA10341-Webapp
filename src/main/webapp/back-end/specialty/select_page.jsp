@@ -3,7 +3,7 @@
 
 <html>
 <head>
-<title>IBM Specialty: Home</title>
+<title>Specialty: Home</title>
 
 <style>
   table#table-1 {
@@ -53,7 +53,7 @@
   
   
   <li>
-    <FORM METHOD="post" ACTION="specialty.do" >
+    <FORM METHOD="post" action="${pageContext.request.contextPath}/specialty.do">
         <b>輸入占卜項目編號 (如10):</b>
         <input type="text" name="specNo">
         <input type="hidden" name="action" value="getOne_For_Display">
@@ -64,7 +64,7 @@
   <jsp:useBean id="specialtySvc" scope="page" class="com.specialty.SpecialtyService" />
    
   <li>
-     <FORM METHOD="post" ACTION="specialty.do" >
+     <FORM METHOD="post" action="${pageContext.request.contextPath}/specialty.do">
        <b>選擇占卜項目編號:</b>
        <select size="1" name="specNo">
          <c:forEach var="specialtyVO" items="${specialtySvc.all}" > 
@@ -77,14 +77,14 @@
   </li>
   
   <li>
-     <FORM METHOD="post" ACTION="specialty.do" >
+     <FORM METHOD="post" action="${pageContext.request.contextPath}/specialty.do">
        <b>選擇占卜項目名稱:</b>
        <select size="1" name="specName">
          <c:forEach var="specialtyVO" items="${specialtySvc.all}" > 
-          <option value="${specialtyVO.specNo}">${specialtyVO.specName}
+          <option value="${specialtyVO.specName}">${specialtyVO.specName}
          </c:forEach>   
        </select>
-       <input type="hidden" name="action" value="getOne_For_Display">
+       <input type="hidden" name="action" value="getOne_For_Display_By_Name">
        <input type="submit" value="送出">
      </FORM>
   </li>

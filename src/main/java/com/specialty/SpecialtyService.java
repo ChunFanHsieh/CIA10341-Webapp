@@ -2,13 +2,15 @@ package com.specialty;
 
 import java.util.List;
 
-
-
 public class SpecialtyService {
 	private SpecialtyDAO_interface dao;
 
 	public SpecialtyService() {
 		dao = new SpecialtyJDBCDAO();
+	}
+
+	public SpecialtyVO getSpecialtyByName(String specName) {
+		return dao.findByName(specName);
 	}
 
 	public SpecialtyVO addSpecialty(Integer specNo, String specName, String specDesc) {
@@ -18,7 +20,7 @@ public class SpecialtyService {
 		specialtyVO.setSpecNo(specNo);
 		specialtyVO.setSpecName(specName);
 		specialtyVO.setSpecDesc(specDesc);
-		
+
 		dao.insert(specialtyVO);
 
 		return specialtyVO;

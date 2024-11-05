@@ -4,23 +4,18 @@ import java.util.*;
 
 import java.sql.*;
 
-
-public class SpecialtyJDBCDAO implements SpecialtyDAO_interface{
+public class SpecialtyJDBCDAO implements SpecialtyDAO_interface {
 	String driver = "com.mysql.cj.jdbc.Driver";
 	String url = "jdbc:mysql://localhost:3306/db01?serverTimezone=Asia/Taipei";
 	String userid = "root";
 	String passwd = "into759hurt494";
 
-	private static final String INSERT_STMT = 
-		"INSERT INTO specialty (specNo, specName, specDesc) VALUES (?, ?, ?)";
-	private static final String GET_ALL_STMT = 
-		"SELECT specNo, specName, specDesc FROM specialty order by specNo";
-	private static final String GET_ONE_STMT = 
-		"SELECT specNo, specName, specDesc FROM specialty where specNo = ?";
-	private static final String DELETE = 
-		"DELETE FROM specialty where specNo = ?";
-	private static final String UPDATE = 
-		"UPDATE specialty set specNo=?, specName=?, specDesc=? where specNo = ?";
+	private static final String INSERT_STMT = "INSERT INTO specialty (specNo, specName, specDesc) VALUES (?, ?, ?)";
+	private static final String GET_ALL_STMT = "SELECT specNo, specName, specDesc FROM specialty order by specNo";
+	private static final String GET_ONE_STMT = "SELECT specNo, specName, specDesc FROM specialty where specNo = ?";
+	private static final String DELETE = "DELETE FROM specialty where specNo = ?";
+	private static final String UPDATE = "UPDATE specialty set specNo=?, specName=?, specDesc=? where specNo = ?";
+	private static final String FIND_BY_NAME = "SELECT specNo, specName, specDesc FROM specialty where specName = ?";
 
 	@Override
 	public void insert(SpecialtyVO specialtyVO) {
@@ -37,19 +32,15 @@ public class SpecialtyJDBCDAO implements SpecialtyDAO_interface{
 			pstmt.setInt(1, specialtyVO.getSpecNo());
 			pstmt.setString(2, specialtyVO.getSpecName());
 			pstmt.setString(3, specialtyVO.getSpecDesc());
-			
-			
 
 			pstmt.executeUpdate();
 
 			// Handle any driver errors
 		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Couldn't load database driver. "
-					+ e.getMessage());
+			throw new RuntimeException("Couldn't load database driver. " + e.getMessage());
 			// Handle any SQL errors
 		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. "
-					+ se.getMessage());
+			throw new RuntimeException("A database error occured. " + se.getMessage());
 			// Clean up JDBC resources
 		} finally {
 			if (pstmt != null) {
@@ -91,12 +82,10 @@ public class SpecialtyJDBCDAO implements SpecialtyDAO_interface{
 
 			// Handle any driver errors
 		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Couldn't load database driver. "
-					+ e.getMessage());
+			throw new RuntimeException("Couldn't load database driver. " + e.getMessage());
 			// Handle any SQL errors
 		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. "
-					+ se.getMessage());
+			throw new RuntimeException("A database error occured. " + se.getMessage());
 			// Clean up JDBC resources
 		} finally {
 			if (pstmt != null) {
@@ -135,12 +124,10 @@ public class SpecialtyJDBCDAO implements SpecialtyDAO_interface{
 
 			// Handle any driver errors
 		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Couldn't load database driver. "
-					+ e.getMessage());
+			throw new RuntimeException("Couldn't load database driver. " + e.getMessage());
 			// Handle any SQL errors
 		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. "
-					+ se.getMessage());
+			throw new RuntimeException("A database error occured. " + se.getMessage());
 			// Clean up JDBC resources
 		} finally {
 			if (pstmt != null) {
@@ -185,17 +172,15 @@ public class SpecialtyJDBCDAO implements SpecialtyDAO_interface{
 				specialtyVO.setSpecNo(rs.getInt("specNo"));
 				specialtyVO.setSpecName(rs.getString("specName"));
 				specialtyVO.setSpecDesc(rs.getString("specDesc"));
-				
+
 			}
 
 			// Handle any driver errors
 		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Couldn't load database driver. "
-					+ e.getMessage());
+			throw new RuntimeException("Couldn't load database driver. " + e.getMessage());
 			// Handle any SQL errors
 		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. "
-					+ se.getMessage());
+			throw new RuntimeException("A database error occured. " + se.getMessage());
 			// Clean up JDBC resources
 		} finally {
 			if (rs != null) {
@@ -245,18 +230,16 @@ public class SpecialtyJDBCDAO implements SpecialtyDAO_interface{
 				specialtyVO.setSpecNo(rs.getInt("specNo"));
 				specialtyVO.setSpecName(rs.getString("specName"));
 				specialtyVO.setSpecDesc(rs.getString("specDesc"));
-				
+
 				list.add(specialtyVO); // Store the row in the list
 			}
 
 			// Handle any driver errors
 		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Couldn't load database driver. "
-					+ e.getMessage());
+			throw new RuntimeException("Couldn't load database driver. " + e.getMessage());
 			// Handle any SQL errors
 		} catch (SQLException se) {
-			throw new RuntimeException("A database error occured. "
-					+ se.getMessage());
+			throw new RuntimeException("A database error occured. " + se.getMessage());
 			// Clean up JDBC resources
 		} finally {
 			if (rs != null) {
@@ -284,6 +267,51 @@ public class SpecialtyJDBCDAO implements SpecialtyDAO_interface{
 		return list;
 	}
 
+	public SpecialtyVO findByName(String specName) {
+		SpecialtyVO specialtyVO = null;
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			Class.forName(driver);
+			con = DriverManager.getConnection(url, userid, passwd);
+			pstmt = con.prepareStatement(FIND_BY_NAME);
+			pstmt.setString(1, specName);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				specialtyVO = new SpecialtyVO();
+				specialtyVO.setSpecNo(rs.getInt("specNo"));
+				specialtyVO.setSpecName(rs.getString("specName"));
+				specialtyVO.setSpecDesc(rs.getString("specDesc"));
+			}
+		} catch (ClassNotFoundException | SQLException e) {
+			throw new RuntimeException("A database error occured. " + e.getMessage());
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException se) {
+					se.printStackTrace(System.err);
+				}
+			}
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException se) {
+					se.printStackTrace(System.err);
+				}
+			}
+			if (con != null) {
+				try {
+					con.close();
+				} catch (Exception e) {
+					e.printStackTrace(System.err);
+				}
+			}
+		}
+		return specialtyVO;
+	}
+
 	public static void main(String[] args) {
 
 		SpecialtyJDBCDAO dao = new SpecialtyJDBCDAO();
@@ -293,7 +321,7 @@ public class SpecialtyJDBCDAO implements SpecialtyDAO_interface{
 		specialtyVO1.setSpecNo(1);
 		specialtyVO1.setSpecName("塔羅牌占卜");
 		specialtyVO1.setSpecDesc("透過塔羅牌解讀未來的指引與建議。");
-		
+
 		dao.insert(specialtyVO1);
 
 //		修改
@@ -312,7 +340,7 @@ public class SpecialtyJDBCDAO implements SpecialtyDAO_interface{
 		System.out.print(specialtyVO3.getSpecNo() + ",");
 		System.out.print(specialtyVO3.getSpecName() + ",");
 		System.out.print(specialtyVO3.getSpecDesc() + ",");
-		
+
 		System.out.println("---------------------");
 
 		// 查詢
@@ -321,9 +349,10 @@ public class SpecialtyJDBCDAO implements SpecialtyDAO_interface{
 			System.out.print(aSpecialty.getSpecNo() + ",");
 			System.out.print(aSpecialty.getSpecName() + ",");
 			System.out.print(aSpecialty.getSpecDesc() + ",");
-			
+
 			System.out.println();
 		}
+
 	}
 
 }
